@@ -27,19 +27,19 @@ func (c *Controllers) readIDParam(r *http.Request) (int64, error) {
 	return id, nil
 }
 
-func (c *Controllers) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
+func (c *Controllers) writeJSON(webCtx *WebContext, status int, data interface{}, headers http.Header) error {
 	js, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
 	for key, val := range headers {
-		w.Header()[key] = val
+		webCtx.Response.Header()[key] = val
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_, _ = w.Write(js)
+	webCtx.Response.Header().Set("Content-Type", "application/json")
+	webCtx.Response.WriteHeader(status)
+	_, _ = webCtx.Response.Write(js)
 
 	return nil
 }

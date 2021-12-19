@@ -18,5 +18,7 @@ func New(ctx *application.Context) http.Handler {
 	// not allowed response
 	router.MethodNotAllowed = controller.ContextWrapperNoParams(controllers.MethodNotAllowedResponse)
 
+	router.GET("/api/v1/auth", controller.ContextWrapper(controllers.GetTwitterOAuthUrl))
+
 	return router
 }

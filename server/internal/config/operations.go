@@ -38,16 +38,22 @@ func ReadFromFile(path string) (*Config, error) {
 func GenerateNewConfigFile(path string) error {
 	emptyConfig := Config{
 		Application: struct {
-			Env  EnvType
-			Port int
+			Env    EnvType
+			Port   int
+			Secret string
 		}{
-			Env:  EnvProd,
-			Port: 8080,
+			Env:    EnvProd,
+			Port:   8080,
+			Secret: "",
 		},
-		Middlewares: Middlewares{
+		Middlewares: middlewares{
 			Cors: struct {
 				TrustedOrigins []string
 			}{},
+		},
+		Twitter: twitter{
+			ConsumerKey:    "",
+			ConsumerSecret: "",
 		},
 	}
 	data, err := toml.Marshal(emptyConfig)

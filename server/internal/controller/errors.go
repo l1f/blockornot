@@ -8,7 +8,7 @@ import (
 func (c *Controllers) errorResponse(webCtx *WebContext, status int, message interface{}) {
 	env := envelope{"error": message}
 
-	err := c.writeJSON(webCtx.Response, status, env, nil)
+	err := c.writeJSON(webCtx, status, env, nil)
 	if err != nil {
 		c.ctx.Logger.Println(webCtx.Request, err)
 		webCtx.Response.WriteHeader(500)

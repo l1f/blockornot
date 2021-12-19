@@ -7,8 +7,8 @@ import (
 )
 
 type Context struct {
-	Config  config.Config
-	Service ServiceInterface
-	Logger  *log.Logger
-	Wg      sync.WaitGroup
+	Config config.Config
+	Logic  Logic
+	Logger *log.Logger
+	Wg     sync.WaitGroup
 }

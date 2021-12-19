@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/l1f/blockornot/internal/application"
 	"github.com/l1f/blockornot/internal/config"
+	"github.com/l1f/blockornot/internal/logic"
 	"github.com/l1f/blockornot/internal/server"
-	"github.com/l1f/blockornot/internal/service"
 	"log"
 	"os"
 )
@@ -79,7 +79,7 @@ func run() {
 		Config: *cfg,
 		Logger: logger,
 	}
-	ctx.Service = service.New(ctx)
+	ctx.Logic = logic.New(ctx)
 
 	logger.Println("Stating webserver...")
 	err = server.New(ctx)
