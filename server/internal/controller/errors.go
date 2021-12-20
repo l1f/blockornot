@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"github.com/l1f/blockornot/validator"
 	"net/http"
+
+	"github.com/l1f/blockornot/validator"
 )
 
 func (c *Controllers) errorResponse(webCtx *WebContext, status int, message interface{}) {

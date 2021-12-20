@@ -5,6 +5,7 @@ import (
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	auth "github.com/dghubble/oauth1/twitter"
+
 	"github.com/l1f/blockornot/internal/controller/dto"
 )
 

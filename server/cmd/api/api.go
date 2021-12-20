@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/l1f/blockornot/internal/application"
 	"github.com/l1f/blockornot/internal/config"
 	"github.com/l1f/blockornot/internal/logic"
 	"github.com/l1f/blockornot/internal/server"
-	"log"
-	"os"
 )
 
 const version = "DEV"
@@ -67,7 +68,7 @@ func main() {
 func run() {
 	logger := log.New(os.Stdout, "", 0)
 
-	logger.Println("Initializing Portasonic backend...")
+	logger.Println("Initializing backend...")
 
 	logger.Println("Loading configuration...")
 	cfg, err := config.ReadFromFile(args.configPath)
@@ -82,7 +83,7 @@ func run() {
 	ctx.Logic = logic.New(ctx)
 
 	logger.Println("Stating webserver...")
-	err = server.New(ctx)
+	err = server.Start(ctx)
 	if err != nil {
 		logger.Fatal(err.Error(), nil)
 	}

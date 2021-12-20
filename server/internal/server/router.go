@@ -1,14 +1,15 @@
-package router
+package server
 
 import (
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+
 	"github.com/l1f/blockornot/internal/application"
 	"github.com/l1f/blockornot/internal/controller"
 	"github.com/l1f/blockornot/internal/middleware"
-	"net/http"
 )
 
-func New(ctx *application.Context) http.Handler {
+func router(ctx *application.Context) http.Handler {
 	router := httprouter.New()
 	controllers := controller.New(ctx)
 	_ = middleware.New(ctx, &controllers)

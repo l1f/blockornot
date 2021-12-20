@@ -1,9 +1,10 @@
 package application
 
 import (
-	"github.com/l1f/blockornot/internal/config"
 	"log"
 	"sync"
+
+	"github.com/l1f/blockornot/internal/config"
 )
 
 type Context struct {

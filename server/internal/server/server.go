@@ -4,19 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/l1f/blockornot/internal/application"
-	"github.com/l1f/blockornot/internal/router"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/l1f/blockornot/internal/application"
 )
 
-func New(appCtx *application.Context) error {
+func Start(appCtx *application.Context) error {
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", appCtx.Config.Application.Port),
-		Handler:      router.New(appCtx),
+		Handler:      router(appCtx),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
