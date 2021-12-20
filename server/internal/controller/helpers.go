@@ -148,6 +148,22 @@ func (c *Controllers) background(fn func()) {
 	}()
 }
 
+func (c Controllers) setAuthHeader(webCtx *WebContext, token, secret string) {
+	webCtx.Response.Header().Set("X-AUTH-TOKEN", token)
+	webCtx.Response.Header().Set("X-AUTH-SECRET", secret)
+}
+
+func (c Controllers) getAuthHeader(webCtx *WebContext) (string, string, error) {
+	token := webCtx.Request.Header.Get("X-AUTH-TOKEN")
+	secret := webCtx.Request.Header.Get("X-AUTH-SECRET")
+
+	if secret == "" || token == "" {
+		return "", "", errors.New("bad auth headers")
+	}
+
+	return token, secret, nil
+}
+
 func (c *Controllers) NotImplementedYet(webCtx *WebContext) {
 	c.ServerErrorResponse(webCtx, errors.New("not implemented jet"))
 }
