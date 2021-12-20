@@ -20,6 +20,7 @@ func Start(appCtx *application.Context) error {
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
+		ErrorLog:     appCtx.Logger.Error,
 	}
 
 	shutdownError := make(chan error)
