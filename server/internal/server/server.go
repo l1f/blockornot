@@ -29,7 +29,7 @@ func Start(appCtx *application.Context) error {
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		s := <-quit
 
-		appCtx.Logger.Println("caught signal", map[string]string{
+		appCtx.Logger.Info.Println("caught signal", map[string]string{
 			"signal": s.String(),
 		})
 
@@ -41,7 +41,7 @@ func Start(appCtx *application.Context) error {
 			shutdownError <- err
 		}
 
-		appCtx.Logger.Println("Completing background tasks", map[string]string{
+		appCtx.Logger.Info.Println("Completing background tasks", map[string]string{
 			"addr": srv.Addr,
 		})
 
@@ -49,7 +49,7 @@ func Start(appCtx *application.Context) error {
 		shutdownError <- nil
 	}()
 
-	appCtx.Logger.Println("Stating server", map[string]string{
+	appCtx.Logger.Info.Println("Stating server", map[string]string{
 		"add": srv.Addr,
 		"env": string(appCtx.Config.Application.Env),
 	})
@@ -64,7 +64,7 @@ func Start(appCtx *application.Context) error {
 		return err
 	}
 
-	appCtx.Logger.Println("Server stopped", map[string]string{
+	appCtx.Logger.Info.Println("Server stopped", map[string]string{
 		"addr": srv.Addr,
 	})
 

@@ -138,7 +138,7 @@ func (c *Controllers) background(fn func()) {
 		defer c.ctx.Wg.Done()
 		defer func() {
 			if err := recover(); err != nil {
-				c.ctx.Logger.Println(err.(string), nil)
+				c.ctx.Logger.Error.Println(err.(string), nil)
 			}
 		}()
 

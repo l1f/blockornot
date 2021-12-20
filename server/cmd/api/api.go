@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	"github.com/l1f/blockornot/logger"
 	"os"
 
 	"github.com/l1f/blockornot/internal/application"
@@ -66,25 +66,25 @@ func main() {
 }
 
 func run() {
-	logger := log.New(os.Stdout, "", 0)
+	log := logger.Init()
 
-	logger.Println("Initializing backend...")
+	log.Info.Println("Initializing backend...")
 
-	logger.Println("Loading configuration...")
+	log.Info.Println("Loading configuration...")
 	cfg, err := config.ReadFromFile(args.configPath)
 	if err != nil {
-		logger.Fatal(err)
+		log.Error.Fatal(err)
 	}
 
 	ctx := &application.Context{
 		Config: *cfg,
-		Logger: logger,
+		Logger: &log,
 	}
 	ctx.Logic = logic.New(ctx)
 
-	logger.Println("Stating webserver...")
+	log.Info.Println("Stating webserver...")
 	err = server.Start(ctx)
 	if err != nil {
-		logger.Fatal(err.Error(), nil)
+		log.Error.Fatal(err)
 	}
 }
