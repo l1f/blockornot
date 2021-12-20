@@ -12,7 +12,7 @@ import (
 func router(ctx *application.Context) http.Handler {
 	router := httprouter.New()
 	controllers := controller.New(ctx)
-	_ = middleware.New(ctx, &controllers)
+	middlewares := middleware.New(ctx, &controllers)
 
 	// not found response
 	router.NotFound = controller.ContextWrapperNoParams(controllers.NotFoundResponse)
@@ -21,5 +21,7 @@ func router(ctx *application.Context) http.Handler {
 
 	router.GET("/api/v1/auth", controller.ContextWrapper(controllers.GetTwitterOAuthUrl))
 
-	return router
+	return middleware.RouterWrapper(
+		middlewares.RecoverPanic(
+			middlewares.RequestLogger(middleware.RouterToControllerWrapper(router))))
 }

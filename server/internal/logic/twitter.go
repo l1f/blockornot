@@ -37,7 +37,7 @@ func (l *logic) TwitterLoginInit() (*dto.Request, error) {
 	requestToken, requestSecret, err := oauth1Config.RequestToken()
 	if err != nil {
 		// TODO: Implement logging
-		// l.ctx.Log.Errorf("couldn't get requestToken: %v", err)
+		// l.ctx.RequestLogger.Errorf("couldn't get requestToken: %v", err)
 		fmt.Printf("couldn't get requestToken: %v\n", err)
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (l *logic) TwitterLoginInit() (*dto.Request, error) {
 	authUrl, err := oauth1Config.AuthorizationURL(requestToken)
 	if err != nil {
 		// TODO: Implement logging
-		// l.ctx.Log.Errorf("couldn't get authorization url: %v", err)
+		// l.ctx.RequestLogger.Errorf("couldn't get authorization url: %v", err)
 		fmt.Printf("couldn't get authorization url: %v\n", err)
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.
 	accessToken, accessSecret, err := oauth1Config.AccessToken(*requestToken.Token, *requestToken.Secret, pin)
 	if err != nil {
 		// TODO: Implement logging
-		// l.ctx.Log.Errorf("couldn't get access requestToken: %v", err)
+		// l.ctx.RequestLogger.Errorf("couldn't get access requestToken: %v", err)
 		fmt.Printf("couldn't get access requestToken: %v\n", err)
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.
 	_, _, err = twitterClient.Accounts.VerifyCredentials(accountVerifyParams)
 	if err != nil {
 		// TODO: Implement logging
-		// l.ctx.Log.Errorf("couldn't verify credentials: %v", err)
+		// l.ctx.RequestLogger.Errorf("couldn't verify credentials: %v", err)
 		fmt.Printf("couldn't verify credentials: %v\n", err)
 		return nil, err
 	}
