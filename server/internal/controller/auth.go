@@ -16,7 +16,7 @@ func (c *Controllers) GetTwitterOAuthUrl(ctx *WebContext) {
 	err = c.writeJSON(ctx, 200, dto.Request{Url: request.Url}, nil)
 }
 
-func (c *Controllers) CompleteTwitterOAuthUrl(ctx *WebContext) {
+func (c *Controllers) CompleteTwitterAuth(ctx *WebContext) {
 	var pin dto.Pin
 	err := c.readJSON(ctx, &pin)
 	if err != nil {
@@ -30,7 +30,7 @@ func (c *Controllers) CompleteTwitterOAuthUrl(ctx *WebContext) {
 		return
 	}
 
-	access, err := c.ctx.Logic.TwitterLoginResolve(dto.Request{
+	access, account, err := c.ctx.Logic.TwitterLoginResolve(dto.Request{
 		Token:  token,
 		Secret: secret,
 	}, pin.Pin)
@@ -42,7 +42,7 @@ func (c *Controllers) CompleteTwitterOAuthUrl(ctx *WebContext) {
 
 	c.setAuthHeader(ctx, access.Token, access.Secret)
 
-	err = c.writeJSON(ctx, 200, nil, nil)
+	err = c.writeJSON(ctx, 200, account, nil)
 	if err != nil {
 		c.ServerErrorResponse(ctx, err)
 		return

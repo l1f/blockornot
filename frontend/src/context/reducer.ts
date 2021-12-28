@@ -31,20 +31,17 @@ export const AuthReducer = (
         ...state,
         accessData: {
           accessUrl: undefined,
-          headers: action.header,
+          headers: undefined,
+          client: action.client,
         },
-        loading: true,
-      };
-    case "AUTH_SUCCESS":
-      return {
-        ...state,
-        loading: false,
         account: action.account,
+        loading: false,
       };
     case "AUTH_ERROR":
       return {
         ...state,
         loading: false,
+        accessData: undefined,
         error: action.error,
       };
     default:

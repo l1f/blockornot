@@ -4,7 +4,7 @@ import { AuthReducer, initialStateType } from "./reducer";
 
 const initialState = {
   account: undefined,
-  header: null,
+  accessData: null,
 
   loading: true,
   error: null,

@@ -1,7 +1,11 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 
 import { AuthContext } from "../../context/context";
-import { dispatchFetchInitialAuthData } from "../../context/actions";
+import {
+  dispatchCompleteAuth,
+  dispatchFetchInitialAuthData,
+} from "../../context/actions";
+import { useNavigate } from "react-router-dom";
 
 const openInNewTab = (url: string) => {
   const newWindow = window.open(url, "_blank", "noopener,noreferrer");
@@ -15,39 +19,63 @@ enum stage {
 }
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [authStage, setAuthStage] = useState<stage>(stage.initial);
+  const [pin, setPin] = useState("");
+
   const { state, dispatch } = useContext(AuthContext);
 
   useEffect(() => {
     dispatchFetchInitialAuthData(dispatch);
   }, [dispatch]);
 
-  const handleLogin = async (event: FormEvent) => {
+  const handleAuthStart = async (event: FormEvent) => {
     event.preventDefault();
 
     const url = state.accessData?.accessUrl;
-
     openInNewTab(`${url?.Scheme}://${url?.Host}${url?.Path}?${url?.RawQuery}`);
+
     setAuthStage(stage.userInput);
   };
 
-  if (authStage == stage.userInput) {
-    return (
-      <div>
+  const handlePinSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    await dispatchCompleteAuth(pin, state.accessData!.headers!, dispatch);
+    setAuthStage(stage.done);
+  };
+
+  const handlePinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPin(event.currentTarget.value);
+  };
+
+  const LoginBtn = () => <button onClick={handleAuthStart}>login</button>;
+  const PinField = () => (
+    <div>
+      <form>
         <label htmlFor="pin">PIN: </label>
-        <input id="pin" />
-      </div>
-    );
+        <input id="pin" onChange={handlePinChange} value={pin} />
+        <button onClick={handlePinSubmit}>login</button>
+      </form>
+    </div>
+  );
+
+  if (authStage === stage.done) {
+    navigate("/");
+  }
+
+  if (state.loading) {
+    return <div>Loading..</div>;
   }
 
   return (
     <div>
       {state.error}
-      {state.loading ? <div>Loading..</div> : null}
       <div>
         <h1>Login w/ twitter</h1>
-        {state.accessData?.accessUrl?.Path}
-        <button onClick={handleLogin}>login</button>
+        {authStage === stage.initial ? <LoginBtn /> : null}
+        {authStage === stage.userInput ? <PinField /> : null}
       </div>
     </div>
   );

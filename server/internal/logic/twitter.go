@@ -53,13 +53,13 @@ func (l *logic) TwitterLoginInit() (*dto.Request, error) {
 	}, nil
 }
 
-func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.Access, error) {
+func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.Access, *dto.Account, error) {
 	oauth1Config := l.getTwitterOAuthConfig()
 
 	accessToken, accessSecret, err := oauth1Config.AccessToken(requestToken.Token, requestToken.Secret, pin)
 	if err != nil {
 		l.ctx.Logger.Error.Printf("couldn't get access requestToken: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	accessTokenDTO := dto.Access{
@@ -75,11 +75,16 @@ func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.
 		IncludeEmail:    twitter.Bool(false),
 	}
 
-	_, _, err = twitterClient.Accounts.VerifyCredentials(accountVerifyParams)
+	user, _, err := twitterClient.Accounts.VerifyCredentials(accountVerifyParams)
 	if err != nil {
 		l.ctx.Logger.Error.Printf("couldn't verify credentials: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 
-	return &accessTokenDTO, nil
+	return &accessTokenDTO, &dto.Account{
+		ScreenName: user.ScreenName,
+		Name:       user.Name,
+		TwitterID:  user.ID,
+		AvatarURL:  user.ProfileImageURL,
+	}, nil
 }
