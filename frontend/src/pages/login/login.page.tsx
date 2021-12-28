@@ -1,29 +1,52 @@
 import { FormEvent, useContext, useEffect, useState } from "react";
 
 import { AuthContext } from "../../context/context";
-import { getAuthHeaders } from "../../context/actions";
+import { dispatchFetchInitialAuthData } from "../../context/actions";
+
+const openInNewTab = (url: string) => {
+  const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+  if (newWindow) newWindow.opener = null;
+};
+
+enum stage {
+  initial,
+  userInput,
+  done,
+}
 
 const Login = () => {
+  const [authStage, setAuthStage] = useState<stage>(stage.initial);
   const { state, dispatch } = useContext(AuthContext);
 
   useEffect(() => {
-    getAuthHeaders(dispatch);
-  }, [getAuthHeaders, dispatch]);
+    dispatchFetchInitialAuthData(dispatch);
+  }, [dispatch]);
 
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
-    try {
-      console.log("test..");
-    } catch (error) {
-      console.log("error.. :D", error);
-    }
+
+    const url = state.accessData?.accessUrl;
+
+    openInNewTab(`${url?.Scheme}://${url?.Host}${url?.Path}?${url?.RawQuery}`);
+    setAuthStage(stage.userInput);
   };
+
+  if (authStage == stage.userInput) {
+    return (
+      <div>
+        <label htmlFor="pin">PIN: </label>
+        <input id="pin" />
+      </div>
+    );
+  }
 
   return (
     <div>
       {state.error}
+      {state.loading ? <div>Loading..</div> : null}
       <div>
         <h1>Login w/ twitter</h1>
+        {state.accessData?.accessUrl?.Path}
         <button onClick={handleLogin}>login</button>
       </div>
     </div>

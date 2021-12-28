@@ -1,20 +1,13 @@
 import { actions } from "./actions";
 import account from "../api/entities/Account";
-import { authHeader } from "../api/client";
+import { accessData } from "../api/client";
 
 export type initialStateType = {
   account?: account | null;
-  header?: authHeader | null;
+  accessData?: accessData | null;
 
   loading: boolean;
   error?: string | null;
-};
-
-const initialState = {
-  account: null,
-  header: null,
-  loading: true,
-  error: null,
 };
 
 export const AuthReducer = (
@@ -30,13 +23,16 @@ export const AuthReducer = (
     case "AUTH_READY":
       return {
         ...state,
-        header: action.header,
+        accessData: action.accessData,
         loading: false,
       };
     case "AUTH_COMPLETE":
       return {
         ...state,
-        header: action.header,
+        accessData: {
+          accessUrl: undefined,
+          headers: action.header,
+        },
         loading: true,
       };
     case "AUTH_SUCCESS":

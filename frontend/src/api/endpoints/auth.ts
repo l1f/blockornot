@@ -1,13 +1,18 @@
 import axios from "axios";
-import { authHeader, Client } from "../client";
+import { accessData, authHeader, Client } from "../client";
 
-const API_PREFIX = "/api/auth/";
+const API_PREFIX = "/api/v1/auth";
 
-export const getInitialAuthHeaders = async (): Promise<authHeader> => {
-  const data = await axios.get(API_PREFIX);
+export const getInitialAccessData = async (): Promise<accessData> => {
+  const response = await axios.get(API_PREFIX);
+  const { data } = await response;
+
   return {
-    token: data.headers["X-AUTH-TOKEN"],
-    secret: data.headers["X-AUTH-SECRET"],
+    headers: {
+      token: response.headers["x-auth-token"],
+      secret: response.headers["x-auth-secret"],
+    },
+    accessUrl: data.access_url,
   };
 };
 

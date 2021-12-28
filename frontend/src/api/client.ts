@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import { AxiosInstance } from "axios";
 
 export type Client = {
   axios: AxiosInstance;
@@ -10,21 +10,15 @@ export type authHeader = {
   secret: string;
 };
 
-export const getClient = (header?: authHeader): Client => {
-  if (header) {
-    return {
-      authorized: true,
-      axios: axios.create({
-        headers: {
-          "X-AUTH-TOKEN": header.token,
-          "X-AUTH-SECRET": header.secret,
-        },
-      }),
-    };
-  }
+export type accessUrl = {
+  Scheme: string;
+  Host: string;
+  Path: string;
+  ForceQuery: boolean;
+  RawQuery: string;
+};
 
-  return {
-    authorized: false,
-    axios: axios,
-  };
+export type accessData = {
+  headers: authHeader;
+  accessUrl?: accessUrl;
 };
