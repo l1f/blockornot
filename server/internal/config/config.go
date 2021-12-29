@@ -8,15 +8,24 @@ const (
 )
 
 type Config struct {
-	Application struct {
-		Env  EnvType
-		Port int
-	}
-	Middlewares Middlewares `toml:"Options"`
+	Application application `toml:"App"`
+	Middlewares middlewares `toml:"Options"`
+	Twitter     twitter     `toml:"twitter"`
 }
 
-type Middlewares struct {
+type application struct {
+	Env    EnvType
+	Port   int
+	Secret string
+}
+
+type middlewares struct {
 	Cors struct {
 		TrustedOrigins []string
 	}
+}
+
+type twitter struct {
+	ConsumerKey    string
+	ConsumerSecret string
 }

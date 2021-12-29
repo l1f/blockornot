@@ -1,14 +1,15 @@
 package application
 
 import (
-	"github.com/l1f/blockornot/internal/config"
-	"log"
 	"sync"
+
+	"github.com/l1f/blockornot/internal/config"
+	"github.com/l1f/blockornot/logger"
 )
 
 type Context struct {
-	Config  config.Config
-	Service ServiceInterface
-	Logger  *log.Logger
-	Wg      sync.WaitGroup
+	Config config.Config
+	Logic  Logic
+	Logger *logger.Logger
+	Wg     sync.WaitGroup
 }

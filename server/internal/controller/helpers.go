@@ -27,19 +27,19 @@ func (c *Controllers) readIDParam(r *http.Request) (int64, error) {
 	return id, nil
 }
 
-func (c *Controllers) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
+func (c *Controllers) writeJSON(webCtx *WebContext, status int, data interface{}, headers http.Header) error {
 	js, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
 	for key, val := range headers {
-		w.Header()[key] = val
+		webCtx.Response.Header()[key] = val
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_, _ = w.Write(js)
+	webCtx.Response.Header().Set("Content-Type", "application/json")
+	webCtx.Response.WriteHeader(status)
+	_, _ = webCtx.Response.Write(js)
 
 	return nil
 }
@@ -138,7 +138,7 @@ func (c *Controllers) background(fn func()) {
 		defer c.ctx.Wg.Done()
 		defer func() {
 			if err := recover(); err != nil {
-				c.ctx.Logger.Println(err.(string), nil)
+				c.ctx.Logger.Error.Println(err.(string), nil)
 			}
 		}()
 
@@ -146,6 +146,22 @@ func (c *Controllers) background(fn func()) {
 		fn()
 
 	}()
+}
+
+func (c Controllers) setAuthHeader(webCtx *WebContext, token, secret string) {
+	webCtx.Response.Header().Set("X-AUTH-TOKEN", token)
+	webCtx.Response.Header().Set("X-AUTH-SECRET", secret)
+}
+
+func (c Controllers) getAuthHeader(webCtx *WebContext) (string, string, error) {
+	token := webCtx.Request.Header.Get("X-AUTH-TOKEN")
+	secret := webCtx.Request.Header.Get("X-AUTH-SECRET")
+
+	if secret == "" || token == "" {
+		return "", "", errors.New("bad auth headers")
+	}
+
+	return token, secret, nil
 }
 
 func (c *Controllers) NotImplementedYet(webCtx *WebContext) {

@@ -1,16 +1,17 @@
 package controller
 
 import (
-	"github.com/l1f/blockornot/validator"
 	"net/http"
+
+	"github.com/l1f/blockornot/validator"
 )
 
 func (c *Controllers) errorResponse(webCtx *WebContext, status int, message interface{}) {
 	env := envelope{"error": message}
 
-	err := c.writeJSON(webCtx.Response, status, env, nil)
+	err := c.writeJSON(webCtx, status, env, nil)
 	if err != nil {
-		c.ctx.Logger.Println(webCtx.Request, err)
+		c.ctx.Logger.Error.Println(webCtx.Request, err)
 		webCtx.Response.WriteHeader(500)
 	}
 }
@@ -21,7 +22,7 @@ func (c *Controllers) RateLimitExceededResponse(webCtx *WebContext) {
 }
 
 func (c *Controllers) ServerErrorResponse(webCtx *WebContext, err error) {
-	c.ctx.Logger.Println(webCtx.Request, err)
+	c.ctx.Logger.Error.Println(webCtx.Request, err)
 	message := "the server encountered a problem and could not process your Request"
 	c.errorResponse(webCtx, http.StatusInternalServerError, message)
 }
