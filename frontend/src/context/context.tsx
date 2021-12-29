@@ -6,6 +6,7 @@ const initialState = {
   account: undefined,
   accessData: null,
 
+  isAuthenticated: false,
   loading: true,
   error: null,
 };

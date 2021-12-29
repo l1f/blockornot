@@ -6,6 +6,7 @@ export type initialStateType = {
   account?: account | null;
   accessData?: accessData | null;
 
+  isAuthenticated: boolean;
   loading: boolean;
   error?: string | null;
 };
@@ -35,6 +36,7 @@ export const AuthReducer = (
           client: action.client,
         },
         account: action.account,
+        isAuthenticated: true,
         loading: false,
       };
     case "AUTH_ERROR":
@@ -42,6 +44,7 @@ export const AuthReducer = (
         ...state,
         loading: false,
         accessData: undefined,
+        isAuthenticated: false,
         error: action.error,
       };
     default:
