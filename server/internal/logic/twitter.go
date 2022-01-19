@@ -6,6 +6,7 @@ import (
 	auth "github.com/dghubble/oauth1/twitter"
 
 	"github.com/l1f/blockornot/internal/controller/dto"
+	"github.com/l1f/blockornot/internal/logic/types"
 )
 
 func (l *logic) getTwitterOAuthConfig() *oauth1.Config {
@@ -87,4 +88,26 @@ func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.
 		TwitterID:  user.ID,
 		AvatarURL:  user.ProfileImageURL,
 	}, nil
+}
+
+func (l logic) SearchTweets(tokens dto.Access, query string, result *types.ResultType) (*[]twitter.Tweet, error) {
+	client := l.getAccountClient(tokens)
+
+	defaultResultType := types.Popular
+	if result != nil {
+		defaultResultType = *result
+	}
+
+	tweets, _, err := client.Search.Tweets(&twitter.SearchTweetParams{
+		Query:           query,
+		ResultType:      string(defaultResultType),
+		Count:           15,
+		IncludeEntities: nil,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &tweets.Statuses, nil
 }
