@@ -25,6 +25,11 @@ func (c *Controllers) Search(ctx *WebContext) {
 		return
 	}
 
+	if len(*tweets) == 0 {
+		c.NotFoundResponse(ctx)
+		return
+	}
+
 	err = c.writeJSON(ctx, 200, tweets, nil)
 	if err != nil {
 		c.ServerErrorResponse(ctx, err)

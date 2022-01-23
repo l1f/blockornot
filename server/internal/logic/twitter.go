@@ -90,10 +90,10 @@ func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.
 	}, nil
 }
 
-func (l logic) SearchTweets(tokens dto.Access, query string, result *types.ResultType) (*[]twitter.Tweet, error) {
+func (l logic) SearchTweets(tokens dto.Access, query string, result *types.TwitterSearchResultType) (*[]dto.Tweet, error) {
 	client := l.getAccountClient(tokens)
 
-	defaultResultType := types.Popular
+	defaultResultType := types.TwitterSearchResultPopular
 	if result != nil {
 		defaultResultType = *result
 	}
@@ -103,11 +103,33 @@ func (l logic) SearchTweets(tokens dto.Access, query string, result *types.Resul
 		ResultType:      string(defaultResultType),
 		Count:           15,
 		IncludeEntities: nil,
+		// https://github.com/tweepy/tweepy/issues/1170
+		TweetMode: "extended",
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &tweets.Statuses, nil
+	var tweetDto []dto.Tweet
+	for _, t := range tweets.Statuses {
+		tweetDto = append(tweetDto, dto.Tweet{
+			CreatedAt:         t.CreatedAt,
+			Entities:          t.Entities,
+			FavoriteCount:     t.FavoriteCount,
+			Favorited:         t.Favorited,
+			ID:                t.ID,
+			PossiblySensitive: t.PossiblySensitive,
+			QuoteCount:        t.QuoteCount,
+			ReplyCount:        t.ReplyCount,
+			RetweetCount:      t.RetweetCount,
+			Retweeted:         t.Retweeted,
+			RetweetedStatus:   t.RetweetedStatus,
+			Text:              t.Text,
+			FullText:          t.FullText,
+			User:              t.User,
+		})
+	}
+
+	return &tweetDto, nil
 }

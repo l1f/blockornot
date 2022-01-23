@@ -1,9 +1,9 @@
 package types
 
-type ResultType string
+type TwitterSearchResultType string
 
 const (
-	Mixed   ResultType = "mixed"
-	Recent  ResultType = "recent"
-	Popular ResultType = "popular"
+	TwitterSearchResultMixed   TwitterSearchResultType = "mixed"
+	TwitterSearchResultRecent  TwitterSearchResultType = "recent"
+	TwitterSearchResultPopular TwitterSearchResultType = "popular"
 )
