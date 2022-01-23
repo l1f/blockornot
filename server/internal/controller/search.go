@@ -16,12 +16,17 @@ func (c *Controllers) Search(ctx *WebContext) {
 	query := ctx.Request.URL.Query().Get("query")
 	if len(query) == 0 {
 		c.badRequestResponse(ctx, errors.New("the query parameter \"query\" must be specified "))
+		return
 	}
 
 	tweets, err := c.ctx.Logic.SearchTweets(dto.Access{Token: token, Secret: secret}, query, nil)
 	if err != nil {
 		c.ServerErrorResponse(ctx, err)
+		return
 	}
 
 	err = c.writeJSON(ctx, 200, tweets, nil)
+	if err != nil {
+		c.ServerErrorResponse(ctx, err)
+	}
 }
