@@ -1,11 +1,12 @@
-import React, { FormEvent, useContext, useEffect, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from 'react'
 
-import { AuthContext } from "../../context/context";
-import {
-  dispatchCompleteAuth,
-  dispatchFetchInitialAuthData,
-} from "../../context/actions";
-import { useNavigate } from "react-router-dom";
+import { AuthContext } from '../../context/context'
+import { dispatchCompleteAuth, dispatchFetchInitialAuthData } from '../../context/actions'
+import { useNavigate } from 'react-router-dom'
+
+import Button from '@mui/material/Button'
+import { Alert, Card, CardContent, Grid, TextField, Typography } from '@mui/material'
+import Header from '../../components/Header/header.component'
 
 const openInNewTab = (url: string) => {
   const newWindow = window.open(url, "_blank", "noopener,noreferrer");
@@ -50,13 +51,12 @@ const Login = () => {
     setPin(event.currentTarget.value);
   };
 
-  const LoginBtn = () => <button onClick={handleAuthStart}>login</button>;
+  const LoginBtn = () => <Button variant="contained" fullWidth onClick={handleAuthStart}>Authorize</Button>;
   const PinField = () => (
     <div>
       <form>
-        <label htmlFor="pin">PIN: </label>
-        <input id="pin" onChange={handlePinChange} value={pin} />
-        <button onClick={handlePinSubmit}>login</button>
+        <TextField label="PIN" variant="outlined" fullWidth onChange={handlePinChange} value={pin} />
+        <Button sx={{ marginTop: 1 }} variant="contained" fullWidth onClick={handlePinSubmit}>Confirm</Button>
       </form>
     </div>
   );
@@ -66,17 +66,34 @@ const Login = () => {
   }
 
   if (state.loading) {
-    return <div>Loading..</div>;
+    return <div>Loading...</div>;
   }
 
   return (
     <div>
-      {state.error}
-      <div>
-        <h1>Login w/ twitter</h1>
-        {authStage === stage.initial ? <LoginBtn /> : null}
-        {authStage === stage.userInput ? <PinField /> : null}
-      </div>
+      <Header />
+      <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '100vh'}}>
+        <Grid item xs={3}>
+          <Alert severity="error" sx={{ marginBottom: 1, display: state.error ? '' : 'none' }}>{state.error}</Alert>
+          <Card>
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                Login with twitter
+              </Typography>
+
+              {(() => {
+                  switch (authStage) {
+                    case stage.initial:
+                      return <LoginBtn />;
+                    case stage.userInput:
+                      return <PinField />;
+                  }
+                }
+              )()}
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </div>
   );
 };
