@@ -1,7 +1,7 @@
 import React from "react";
 import { AxiosInstance } from "axios";
 
-import account from "../api/entities/Account";
+import account from "../entities/Account";
 import { accessData, authHeader } from "../api/client";
 import { completeAuth, getInitialAccessData } from "../api/endpoints/auth";
 
@@ -16,8 +16,8 @@ export const dispatchFetchInitialAuthData = async (
   dispatch: React.Dispatch<actions>
 ) => {
   try {
-    const accessData = await getInitialAccessData();
-    dispatch({ type: "AUTH_READY", accessData });
+    const data = await getInitialAccessData();
+    dispatch({ type: "AUTH_READY", accessData: data });
   } catch (error) {
     dispatch({ type: "AUTH_ERROR", error: "Error initializing auth" });
   }
@@ -29,8 +29,8 @@ export const dispatchCompleteAuth = async (
   dispatch: React.Dispatch<actions>
 ) => {
   try {
-    const [client, account] = await completeAuth(pin, headers);
-    dispatch({ type: "AUTH_COMPLETE", client, account });
+    const [client, responseData] = await completeAuth(pin, headers);
+    dispatch({ type: "AUTH_COMPLETE", client, account: responseData });
   } catch (error) {
     dispatch({ type: "AUTH_ERROR", error: "Error completing auth" });
   }

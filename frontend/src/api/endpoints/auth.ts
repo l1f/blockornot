@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { accessData, authHeader } from "../client";
-import Account from "../entities/Account";
+import Account from "../../entities/Account";
 
 const API_PREFIX = "/api/v1/auth";
 

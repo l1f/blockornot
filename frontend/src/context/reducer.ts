@@ -1,5 +1,5 @@
 import { actions } from "./actions";
-import account from "../api/entities/Account";
+import account from "../entities/Account";
 import { accessData } from "../api/client";
 
 export type initialStateType = {
