@@ -243,3 +243,4 @@ node_modules
 psd
 thumb
 sketch
+/server/config.toml

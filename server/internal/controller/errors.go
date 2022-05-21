@@ -11,7 +11,7 @@ func (c *Controllers) errorResponse(webCtx *WebContext, status int, message inte
 
 	err := c.writeJSON(webCtx, status, env, nil)
 	if err != nil {
-		c.ctx.Logger.Error.Println(webCtx.Request, err)
+		c.ctx.Logger.Error().Msgf("%v %v", webCtx.Request, err)
 		webCtx.Response.WriteHeader(500)
 	}
 }
@@ -22,7 +22,7 @@ func (c *Controllers) RateLimitExceededResponse(webCtx *WebContext) {
 }
 
 func (c *Controllers) ServerErrorResponse(webCtx *WebContext, err error) {
-	c.ctx.Logger.Error.Println(webCtx.Request, err)
+	c.ctx.Logger.Error().Msgf("%v %v", webCtx.Request, err)
 	message := "the server encountered a problem and could not process your Request"
 	c.errorResponse(webCtx, http.StatusInternalServerError, message)
 }

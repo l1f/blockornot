@@ -1,15 +1,15 @@
 package application
 
 import (
+	"github.com/rs/zerolog"
 	"sync"
 
 	"github.com/l1f/blockornot/internal/config"
-	"github.com/l1f/blockornot/logger"
 )
 
 type Context struct {
 	Config config.Config
 	Logic  Logic
-	Logger *logger.Logger
+	Logger *zerolog.Logger
 	Wg     sync.WaitGroup
 }
