@@ -19,8 +19,12 @@ func router(ctx *application.Context) http.Handler {
 	// not allowed response
 	router.MethodNotAllowed = controller.ContextWrapperNoParams(controllers.MethodNotAllowedResponse)
 
+	// auth
 	router.GET("/api/v1/auth", controller.ContextWrapper(controllers.GetTwitterOAuthUrl))
 	router.POST("/api/v1/auth", controller.ContextWrapper(controllers.CompleteTwitterAuth))
+
+	// search
+	router.GET("/api/v1/search", controller.ContextWrapper(controllers.Search))
 
 	return middleware.RouterWrapper(
 		middlewares.RecoverPanic(

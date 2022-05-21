@@ -6,6 +6,7 @@ import (
 	auth "github.com/dghubble/oauth1/twitter"
 
 	"github.com/l1f/blockornot/internal/controller/dto"
+	"github.com/l1f/blockornot/internal/logic/types"
 )
 
 func (l *logic) getTwitterOAuthConfig() *oauth1.Config {
@@ -87,4 +88,48 @@ func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.
 		TwitterID:  user.ID,
 		AvatarURL:  user.ProfileImageURL,
 	}, nil
+}
+
+func (l logic) SearchTweets(tokens dto.Access, query string, result *types.TwitterSearchResultType) (*[]dto.Tweet, error) {
+	client := l.getAccountClient(tokens)
+
+	defaultResultType := types.TwitterSearchResultPopular
+	if result != nil {
+		defaultResultType = *result
+	}
+
+	tweets, _, err := client.Search.Tweets(&twitter.SearchTweetParams{
+		Query:           query,
+		ResultType:      string(defaultResultType),
+		Count:           15,
+		IncludeEntities: nil,
+		// https://github.com/tweepy/tweepy/issues/1170
+		TweetMode: "extended",
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var tweetDto []dto.Tweet
+	for _, t := range tweets.Statuses {
+		tweetDto = append(tweetDto, dto.Tweet{
+			CreatedAt:         t.CreatedAt,
+			Entities:          t.Entities,
+			FavoriteCount:     t.FavoriteCount,
+			Favorited:         t.Favorited,
+			ID:                t.ID,
+			PossiblySensitive: t.PossiblySensitive,
+			QuoteCount:        t.QuoteCount,
+			ReplyCount:        t.ReplyCount,
+			RetweetCount:      t.RetweetCount,
+			Retweeted:         t.Retweeted,
+			RetweetedStatus:   t.RetweetedStatus,
+			Text:              t.Text,
+			FullText:          t.FullText,
+			User:              t.User,
+		})
+	}
+
+	return &tweetDto, nil
 }
