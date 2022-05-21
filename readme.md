@@ -36,6 +36,12 @@ or
 go build cmd/api/api.go -c ./config.toml run
 ```
 
+##### Live reload
+With [air](https://github.com/cosmtrek/air) it's possible reload the backend live
+on change.
+
+Use it with the `air` command.
+
 ### frontend
 The frontend is written with react using typescript. 
 
