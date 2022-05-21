@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/l1f/blockornot/validator"
@@ -33,7 +34,7 @@ func (c *Controllers) NotFoundResponse(webCtx *WebContext) {
 }
 
 func (c *Controllers) MethodNotAllowedResponse(webCtx *WebContext) {
-	message := "the %s method is not supported for this resource"
+	message := fmt.Sprintf("%s method is not supported for this resource", webCtx.Request.Method)
 	c.errorResponse(webCtx, http.StatusMethodNotAllowed, message)
 }
 
