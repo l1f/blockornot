@@ -24,9 +24,13 @@ func router(ctx *application.Context) http.Handler {
 	router.POST("/api/v1/auth", controller.ContextWrapper(controllers.CompleteTwitterAuth))
 
 	// search
-	router.GET("/api/v1/search", controller.ContextWrapper(controllers.Search))
+	router.GET("/api/v1/search", controller.ContextWrapper(middlewares.MustAuthenticated(controllers.Search)))
+
+	// users
+	router.GET("/api/v1/users/:id", controller.ContextWrapper(middlewares.MustAuthenticated(controllers.GetUserById)))
 
 	return middleware.RouterWrapper(
 		middlewares.RecoverPanic(
-			middlewares.RequestLogger(middleware.RouterToControllerWrapper(router))))
+			middlewares.RequestLogger(
+				middleware.RouterToControllerWrapper(router))))
 }

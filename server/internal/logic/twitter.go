@@ -4,7 +4,6 @@ import (
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	auth "github.com/dghubble/oauth1/twitter"
-
 	"github.com/l1f/blockornot/internal/controller/dto"
 	"github.com/l1f/blockornot/internal/logic/types"
 )
@@ -132,4 +131,25 @@ func (l logic) SearchTweets(tokens dto.Access, query string, result *types.Twitt
 	}
 
 	return &tweetDto, nil
+}
+
+func (l *logic) GetUserById(tokens dto.Access, userId int64) (*dto.Account, error) {
+	client := l.getAccountClient(tokens)
+
+	var includeEntities = true
+	searchParams := twitter.UserShowParams{UserID: userId, IncludeEntities: &includeEntities}
+
+	user, _, err := client.Users.Show(&searchParams)
+	if err != nil {
+		return nil, err
+	}
+
+	account := dto.Account{
+		ScreenName: user.ScreenName,
+		Name:       user.Name,
+		TwitterID:  user.ID,
+		AvatarURL:  user.ProfileImageURL,
+	}
+
+	return &account, nil
 }
