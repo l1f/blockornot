@@ -17,7 +17,7 @@ func (c *Controllers) GetUserById(ctx *WebContext) {
 		return
 	}
 
-	user, err := c.ctx.Logic.GetUserById(dto.Access{
+	user, err := c.ctx.Logic.GetUserByID(dto.Access{
 		Token:  token,
 		Secret: secret,
 	}, userId)
