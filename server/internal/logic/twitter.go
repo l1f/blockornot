@@ -155,3 +155,24 @@ func (l *logic) GetUserByID(tokens dto.Access, userId int64) (*dto.Account, erro
 
 	return &account, nil
 }
+
+func (l *logic) BlockUserByID(tokens dto.Access, userId int64) (*dto.Account, error) {
+	client := l.getAccountClient(tokens)
+
+	blockParams := twitter.BlockCreateParams{
+		UserID: userId,
+	}
+	user, _, err := client.Blocks.Create(&blockParams)
+	if err != nil {
+		return nil, err
+	}
+
+	account := dto.Account{
+		ScreenName: user.ScreenName,
+		Name:       user.Name,
+		TwitterID:  user.ID,
+		AvatarURL:  user.ProfileImageURL,
+	}
+
+	return &account, nil
+}

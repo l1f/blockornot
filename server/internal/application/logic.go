@@ -11,4 +11,5 @@ type Logic interface {
 
 	SearchTweets(tokens dto.Access, query string, result *types.TwitterSearchResultType) (*[]dto.Tweet, error)
 	GetUserByID(tokens dto.Access, userID int64) (*dto.Account, error)
+	BlockUserByID(tokens dto.Access, userId int64) (*dto.Account, error)
 }
