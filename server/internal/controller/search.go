@@ -7,11 +7,8 @@ import (
 )
 
 func (c *Controllers) Search(ctx *WebContext) {
-	token, secret, err := c.getAuthHeader(ctx)
-	if err != nil {
-		c.badRequestResponse(ctx, err)
-		return
-	}
+	token := ctx.Request.Header.Get("X-AUTH-TOKEN")
+	secret := ctx.Request.Header.Get("X-AUTH-SECRET")
 
 	query := ctx.Request.URL.Query().Get("query")
 	if len(query) == 0 {

@@ -1,12 +1,13 @@
 package logic
 
 import (
-	"github.com/dghubble/go-twitter/twitter"
+	baseTwitter "github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
-	auth "github.com/dghubble/oauth1/twitter"
+	twitterAuth "github.com/dghubble/oauth1/twitter"
 
 	"github.com/l1f/blockornot/internal/controller/dto"
 	"github.com/l1f/blockornot/internal/logic/types"
+	"github.com/l1f/blockornot/twitter"
 )
 
 func (l *logic) getTwitterOAuthConfig() *oauth1.Config {
@@ -14,7 +15,7 @@ func (l *logic) getTwitterOAuthConfig() *oauth1.Config {
 		ConsumerKey:    l.ctx.Config.Twitter.ConsumerKey,
 		ConsumerSecret: l.ctx.Config.Twitter.ConsumerSecret,
 		CallbackURL:    "oob",
-		Endpoint:       auth.AuthenticateEndpoint,
+		Endpoint:       twitterAuth.AuthenticateEndpoint,
 	}
 }
 
@@ -41,14 +42,14 @@ func (l *logic) TwitterLoginInit() (*dto.Request, error) {
 		return nil, err
 	}
 
-	authUrl, err := oauth1Config.AuthorizationURL(requestToken)
+	authURL, err := oauth1Config.AuthorizationURL(requestToken)
 	if err != nil {
 		l.ctx.Logger.Error().Msgf("couldn't get authorization url: %v", err)
 		return nil, err
 	}
 
 	return &dto.Request{
-		Url:    authUrl,
+		Url:    authURL,
 		Token:  requestToken,
 		Secret: requestSecret,
 	}, nil
@@ -70,13 +71,13 @@ func (l *logic) TwitterLoginResolve(requestToken dto.Request, pin string) (*dto.
 
 	twitterClient := l.getAccountClient(accessTokenDTO)
 
-	accountVerifyParams := &twitter.AccountVerifyParams{
-		IncludeEntities: twitter.Bool(false),
-		SkipStatus:      twitter.Bool(true),
-		IncludeEmail:    twitter.Bool(false),
+	accountVerifyParams := &baseTwitter.AccountVerifyParams{
+		IncludeEntities: baseTwitter.Bool(false),
+		SkipStatus:      baseTwitter.Bool(true),
+		IncludeEmail:    baseTwitter.Bool(false),
 	}
 
-	user, _, err := twitterClient.Accounts.VerifyCredentials(accountVerifyParams)
+	user, _, err := twitterClient.Client.Accounts.VerifyCredentials(accountVerifyParams)
 	if err != nil {
 		l.ctx.Logger.Error().Msgf("couldn't verify credentials: %v", err)
 		return nil, nil, err
@@ -98,7 +99,7 @@ func (l logic) SearchTweets(tokens dto.Access, query string, result *types.Twitt
 		defaultResultType = *result
 	}
 
-	tweets, _, err := client.Search.Tweets(&twitter.SearchTweetParams{
+	tweets, _, err := client.Client.Search.Tweets(&baseTwitter.SearchTweetParams{
 		Query:           query,
 		ResultType:      string(defaultResultType),
 		Count:           15,
@@ -132,4 +133,46 @@ func (l logic) SearchTweets(tokens dto.Access, query string, result *types.Twitt
 	}
 
 	return &tweetDto, nil
+}
+
+func (l *logic) GetUserByID(tokens dto.Access, userId int64) (*dto.Account, error) {
+	client := l.getAccountClient(tokens)
+
+	var includeEntities = true
+	searchParams := baseTwitter.UserShowParams{UserID: userId, IncludeEntities: &includeEntities}
+
+	user, _, err := client.Client.Users.Show(&searchParams)
+	if err != nil {
+		return nil, err
+	}
+
+	account := dto.Account{
+		ScreenName: user.ScreenName,
+		Name:       user.Name,
+		TwitterID:  user.ID,
+		AvatarURL:  user.ProfileImageURL,
+	}
+
+	return &account, nil
+}
+
+func (l *logic) BlockUserByID(tokens dto.Access, userId int64) (*dto.Account, error) {
+	client := l.getAccountClient(tokens)
+
+	blockParams := twitter.BlockCreateParams{
+		UserID: userId,
+	}
+	user, _, err := client.Blocks.Create(&blockParams)
+	if err != nil {
+		return nil, err
+	}
+
+	account := dto.Account{
+		ScreenName: user.ScreenName,
+		Name:       user.Name,
+		TwitterID:  user.ID,
+		AvatarURL:  user.ProfileImageURL,
+	}
+
+	return &account, nil
 }
